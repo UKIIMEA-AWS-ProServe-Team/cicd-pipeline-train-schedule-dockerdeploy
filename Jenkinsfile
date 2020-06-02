@@ -19,7 +19,7 @@ pipeline {
             }
             steps {
                 script {
-                    app = docker.build("ianp5uk/train-schedule")
+                    app = docker.build("ukpractice/train-schedule")
                 }
             }
         }
@@ -45,13 +45,13 @@ pipeline {
                 milestone(1)
                 withCredentials([sshUserPrivateKey(credentialsId: 'swarm_login', keyFileVariable: 'KEYFILE', passphraseVariable: '', usernameVariable: 'USERNAME')]) {
                     script {
-                        sh "sshpass -v ssh -i $KEYFILE -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker pull ianp5uk/train-schedule:${env.BUILD_NUMBER}\""
+                        sh "sshpass -v ssh -i $KEYFILE -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker pull ukpractice/train-schedule:${env.BUILD_NUMBER}\""
                         try {
                             sh "sshpass -v ssh -i $KEYFILE -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker service rm train-schedule\""
                         } catch (err) {
                             echo: 'caught error: $err'
                         }
-                        sh "sshpass -v ssh -i $KEYFILE -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker service create --name train-schedule --replicas 3 -p 80:3000 ianp5uk/train-schedule:${env.BUILD_NUMBER}\""
+                        sh "sshpass -v ssh -i $KEYFILE -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker service create --name train-schedule --replicas 3 -p 80:3000 ukpractice/train-schedule:${env.BUILD_NUMBER}\""
                     }
                 }
             }
